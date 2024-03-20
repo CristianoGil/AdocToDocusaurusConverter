@@ -52,6 +52,7 @@ def update_md_for_docusaurus(output_dir='output', title_order=None):
         title_order = {}
 
     style_attr_regex = re.compile(r'style="([^"]+)"')
+    class_attr_regex = re.compile(r'\bclass="([^"]+)"')
 
     for root, dirs, files in os.walk(output_dir):
         for file in files:
@@ -66,6 +67,9 @@ def update_md_for_docusaurus(output_dir='output', title_order=None):
 
                 # Convert style attributes to style objects, handling the conversion to a JSON-like syntax
                 content = style_attr_regex.sub(lambda m: f"style={convert_css_to_object(m.group(1))}", content)
+
+                # Convert class attributes to className for JSX compatibility
+                content = class_attr_regex.sub(r'className="\1"', content)
 
                 with open(md_file_path, 'w', encoding='utf-8') as md_file:
                     lines = content.split('\n', 1)
